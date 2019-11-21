@@ -307,15 +307,15 @@ abstract class REST_Controller extends \CI_Controller {
      * @var array
      */
     protected $_supported_formats = [
-            'json' => 'application/json',
-            'array' => 'application/json',
-            'csv' => 'application/csv',
-            'html' => 'text/html',
-            'jsonp' => 'application/javascript',
-            'php' => 'text/plain',
-            'serialized' => 'application/vnd.php.serialized',
-            'xml' => 'application/xml'
-        ];
+        'json' => 'application/json',
+        'array' => 'application/json',
+        'csv' => 'application/csv',
+        'html' => 'text/html',
+        'jsonp' => 'application/javascript',
+        'php' => 'text/plain',
+        'serialized' => 'application/vnd.php.serialized',
+        'xml' => 'application/xml'
+    ];
 
     /**
      * Information about the current API user
@@ -480,7 +480,7 @@ abstract class REST_Controller extends \CI_Controller {
         $this->request->body = NULL;
 
         $this->{'_parse_' . $this->request->method}();
-        
+
         // Fix parse method return arguments null
         if($this->{'_'.$this->request->method.'_args'} === null)
         {
@@ -547,15 +547,15 @@ abstract class REST_Controller extends \CI_Controller {
         {
             // Display an error response
             $this->response([
-                    $this->config->item('rest_status_field_name') => FALSE,
-                    $this->config->item('rest_message_field_name') => $this->lang->line('text_rest_ajax_only')
-                ], self::HTTP_NOT_ACCEPTABLE);
+                $this->config->item('rest_status_field_name') => FALSE,
+                $this->config->item('rest_message_field_name') => $this->lang->line('text_rest_ajax_only')
+            ], self::HTTP_NOT_ACCEPTABLE);
         }
 
         // When there is no specific override for the current class/method, use the default auth value set in the config
         if ($this->auth_override === FALSE &&
             (! ($this->config->item('rest_enable_keys') && $this->_allow === TRUE) ||
-            ($this->config->item('allow_auth_and_keys') === TRUE && $this->_allow === TRUE)))
+                ($this->config->item('allow_auth_and_keys') === TRUE && $this->_allow === TRUE)))
         {
             $rest_auth = strtolower($this->config->item('rest_auth'));
             switch ($rest_auth)
@@ -633,20 +633,20 @@ abstract class REST_Controller extends \CI_Controller {
         if ($this->config->item('force_https') && $this->request->ssl === FALSE)
         {
             $this->response([
-                    $this->config->item('rest_status_field_name') => FALSE,
-                    $this->config->item('rest_message_field_name') => $this->lang->line('text_rest_unsupported')
-                ], self::HTTP_FORBIDDEN);
+                $this->config->item('rest_status_field_name') => FALSE,
+                $this->config->item('rest_message_field_name') => $this->lang->line('text_rest_unsupported')
+            ], self::HTTP_FORBIDDEN);
         }
 
         // Remove the supported format from the function name e.g. index.json => index
         $object_called = preg_replace('/^(.*)\.(?:'.implode('|', array_keys($this->_supported_formats)).')$/', '$1', $object_called);
 
         $controller_method = $object_called.'_'.$this->request->method;
-	    // Does this method exist? If not, try executing an index method
-	    if (!method_exists($this, $controller_method)) {
-		    $controller_method = "index_" . $this->request->method;
-		    array_unshift($arguments, $object_called);
-	    }
+        // Does this method exist? If not, try executing an index method
+        if (!method_exists($this, $controller_method)) {
+            $controller_method = "index_" . $this->request->method;
+            array_unshift($arguments, $object_called);
+        }
 
         // Do we want to log this method (if allowed by config)?
         $log_method = ! (isset($this->methods[$controller_method]['log']) && $this->methods[$controller_method]['log'] === FALSE);
@@ -661,16 +661,16 @@ abstract class REST_Controller extends \CI_Controller {
             {
                 $this->_log_request();
             }
-            
+
             // fix cross site to option request error 
             if($this->request->method == 'options') {
                 exit;
             }
 
             $this->response([
-                    $this->config->item('rest_status_field_name') => FALSE,
-                    $this->config->item('rest_message_field_name') => sprintf($this->lang->line('text_rest_invalid_api_key'), $this->rest->key)
-                ], self::HTTP_FORBIDDEN);
+                $this->config->item('rest_status_field_name') => FALSE,
+                $this->config->item('rest_message_field_name') => sprintf($this->lang->line('text_rest_invalid_api_key'), $this->rest->key)
+            ], self::HTTP_FORBIDDEN);
         }
 
         // Check to see if this key has access to the requested controller
@@ -682,18 +682,18 @@ abstract class REST_Controller extends \CI_Controller {
             }
 
             $this->response([
-                    $this->config->item('rest_status_field_name') => FALSE,
-                    $this->config->item('rest_message_field_name') => $this->lang->line('text_rest_api_key_unauthorized')
-                ], self::HTTP_UNAUTHORIZED);
+                $this->config->item('rest_status_field_name') => FALSE,
+                $this->config->item('rest_message_field_name') => $this->lang->line('text_rest_api_key_unauthorized')
+            ], self::HTTP_UNAUTHORIZED);
         }
 
         // Sure it exists, but can they do anything with it?
         if (! method_exists($this, $controller_method))
         {
             $this->response([
-                    $this->config->item('rest_status_field_name') => FALSE,
-                    $this->config->item('rest_message_field_name') => $this->lang->line('text_rest_unknown_method')
-                ], self::HTTP_METHOD_NOT_ALLOWED);
+                $this->config->item('rest_status_field_name') => FALSE,
+                $this->config->item('rest_message_field_name') => $this->lang->line('text_rest_unknown_method')
+            ], self::HTTP_METHOD_NOT_ALLOWED);
         }
 
         // Doing key related stuff? Can only do it if they have a key right?
@@ -749,8 +749,8 @@ abstract class REST_Controller extends \CI_Controller {
             }
 
             // If the method doesn't exist, then the error will be caught and an error response shown
-	        $_error = &load_class('Exceptions', 'core');
-	        $_error->show_exception($ex);
+            $_error = &load_class('Exceptions', 'core');
+            $_error->show_exception($ex);
         }
     }
 
@@ -764,7 +764,7 @@ abstract class REST_Controller extends \CI_Controller {
      */
     public function response($data = NULL, $http_code = NULL)
     {
-		ob_start();
+        ob_start();
         // If the HTTP status is not NULL, then cast as an integer
         if ($http_code !== NULL)
         {
@@ -1009,6 +1009,15 @@ abstract class REST_Controller extends \CI_Controller {
         // Get the api key name variable set in the rest config file
         $api_key_variable = $this->config->item('rest_key_name');
 
+        /* Check if the API-KEY field does not exist */
+        if(!array_key_exists($api_key_variable, $this->_args)) {
+            /* Check if the alternative API-KEY field is present */
+
+            if(array_key_exists('API_KEY', $this->_args)) {
+                $this->_args[$api_key_variable] = $this->_args['API_KEY'];
+            }
+        }
+
         // Work out the name of the SERVER entry based on config
         $key_name = 'HTTP_' . strtoupper(str_replace('-', '_', $api_key_variable));
 
@@ -1154,28 +1163,28 @@ abstract class REST_Controller extends \CI_Controller {
 
         switch ($this->config->item('rest_limits_method'))
         {
-          case 'IP_ADDRESS':
-            $limited_uri = 'ip-address:' .$this->input->ip_address();
-            $api_key = $this->input->ip_address();
-            break;
+            case 'IP_ADDRESS':
+                $limited_uri = 'ip-address:' .$this->input->ip_address();
+                $api_key = $this->input->ip_address();
+                break;
 
-          case 'API_KEY':
-            $limited_uri = 'api-key:' . $api_key;
-            break;
+            case 'API_KEY':
+                $limited_uri = 'api-key:' . $api_key;
+                break;
 
-          case 'METHOD_NAME':
-            $limited_uri = 'method-name:' . $controller_method;
-            break;
+            case 'METHOD_NAME':
+                $limited_uri = 'method-name:' . $controller_method;
+                break;
 
-          case 'ROUTED_URL':
-          default:
-            $limited_uri = $this->uri->ruri_string();
-            if (strpos(strrev($limited_uri), strrev($this->response->format)) === 0)
-            {
-                $limited_uri = substr($limited_uri,0, -strlen($this->response->format) - 1);
-            }
-            $limited_uri = 'uri:'.$limited_uri.':'.$this->request->method; // It's good to differentiate GET from PUT
-            break;
+            case 'ROUTED_URL':
+            default:
+                $limited_uri = $this->uri->ruri_string();
+                if (strpos(strrev($limited_uri), strrev($this->response->format)) === 0)
+                {
+                    $limited_uri = substr($limited_uri,0, -strlen($this->response->format) - 1);
+                }
+                $limited_uri = 'uri:'.$limited_uri.':'.$this->request->method; // It's good to differentiate GET from PUT
+                break;
         }
 
         if (isset($this->methods[$controller_method]['limit']) === FALSE )
@@ -1478,8 +1487,8 @@ abstract class REST_Controller extends \CI_Controller {
         }
         else if ($this->input->method() === 'put')
         {
-           // If no file type is provided, then there are probably just arguments
-           $this->_put_args = $this->input->input_stream();
+            // If no file type is provided, then there are probably just arguments
+            $this->_put_args = $this->input->input_stream();
         }
     }
 
@@ -1951,9 +1960,9 @@ abstract class REST_Controller extends \CI_Controller {
         {
             // Display an error response
             $this->response([
-                    $this->config->item('rest_status_field_name') => FALSE,
-                    $this->config->item('rest_message_field_name') => $this->lang->line('text_rest_unauthorized')
-                ], self::HTTP_UNAUTHORIZED);
+                $this->config->item('rest_status_field_name') => FALSE,
+                $this->config->item('rest_message_field_name') => $this->lang->line('text_rest_unauthorized')
+            ], self::HTTP_UNAUTHORIZED);
         }
     }
 
@@ -2049,9 +2058,9 @@ abstract class REST_Controller extends \CI_Controller {
         {
             // Display an error response
             $this->response([
-                    $this->config->item('rest_status_field_name') => FALSE,
-                    $this->config->item('rest_message_field_name') => $this->lang->line('text_rest_invalid_credentials')
-                ], self::HTTP_UNAUTHORIZED);
+                $this->config->item('rest_status_field_name') => FALSE,
+                $this->config->item('rest_message_field_name') => $this->lang->line('text_rest_invalid_credentials')
+            ], self::HTTP_UNAUTHORIZED);
         }
     }
 
@@ -2071,9 +2080,9 @@ abstract class REST_Controller extends \CI_Controller {
         {
             // Display an error response
             $this->response([
-                    $this->config->item('rest_status_field_name') => FALSE,
-                    $this->config->item('rest_message_field_name') => $this->lang->line('text_rest_ip_denied')
-                ], self::HTTP_UNAUTHORIZED);
+                $this->config->item('rest_status_field_name') => FALSE,
+                $this->config->item('rest_message_field_name') => $this->lang->line('text_rest_ip_denied')
+            ], self::HTTP_UNAUTHORIZED);
         }
     }
 
@@ -2099,9 +2108,9 @@ abstract class REST_Controller extends \CI_Controller {
         if (in_array($this->input->ip_address(), $whitelist) === FALSE)
         {
             $this->response([
-                    $this->config->item('rest_status_field_name') => FALSE,
-                    $this->config->item('rest_message_field_name') => $this->lang->line('text_rest_ip_unauthorized')
-                ], self::HTTP_UNAUTHORIZED);
+                $this->config->item('rest_status_field_name') => FALSE,
+                $this->config->item('rest_message_field_name') => $this->lang->line('text_rest_ip_unauthorized')
+            ], self::HTTP_UNAUTHORIZED);
         }
     }
 
@@ -2133,9 +2142,9 @@ abstract class REST_Controller extends \CI_Controller {
 
         // Display an error response
         $this->response([
-                $this->config->item('rest_status_field_name') => FALSE,
-                $this->config->item('rest_message_field_name') => $this->lang->line('text_rest_unauthorized')
-            ], self::HTTP_UNAUTHORIZED);
+            $this->config->item('rest_status_field_name') => FALSE,
+            $this->config->item('rest_message_field_name') => $this->lang->line('text_rest_unauthorized')
+        ], self::HTTP_UNAUTHORIZED);
     }
 
     /**
@@ -2150,9 +2159,9 @@ abstract class REST_Controller extends \CI_Controller {
         $payload['rtime'] = $this->_end_rtime - $this->_start_rtime;
 
         return $this->rest->db->update(
-                $this->config->item('rest_logs_table'), $payload, [
-                'id' => $this->_insert_id
-            ]);
+            $this->config->item('rest_logs_table'), $payload, [
+            'id' => $this->_insert_id
+        ]);
     }
 
     /**
@@ -2194,7 +2203,7 @@ abstract class REST_Controller extends \CI_Controller {
 
         if (!empty($accessRow) && !empty($accessRow['all_access']))
         {
-        	return TRUE;
+            return TRUE;
         }
 
         // Fetch controller based on path and controller name
@@ -2209,10 +2218,10 @@ abstract class REST_Controller extends \CI_Controller {
 
         // Query the access table and get the number of results
         return $this->rest->db
-            ->where('key', $this->rest->key)
-            ->where('controller', $controller)
-            ->get($this->config->item('rest_access_table'))
-            ->num_rows() > 0;
+                ->where('key', $this->rest->key)
+                ->where('controller', $controller)
+                ->get($this->config->item('rest_access_table'))
+                ->num_rows() > 0;
     }
 
     /**
